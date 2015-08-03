@@ -4,7 +4,7 @@
 #include "ofVectorMath.h"
 #include "of3dUtils.h"
 #include "ofAppRunner.h"
-
+#include <unordered_set>
 
 /// \brief A generic 3d object in space with transformation (position, rotation, scale).
 ///
@@ -39,6 +39,7 @@
 // TODO: cache inverseMatrix, local and global
 class ofNode {
 public:
+	typedef std::unordered_set<ofNode*> ofNodeSet;
 	/// \cond INTERNAL
 	
 	ofNode();
@@ -229,7 +230,6 @@ public:
 	/// \}
 	
 protected:
-
 	ofNode *parent;
 	
 	void createMatrix();
@@ -255,4 +255,14 @@ private:
 	ofMatrix4x4 localTransformMatrix;
 	bool legacyCustomDrawOverrided;
 //	ofMatrix4x4 globalTransformMatrix;
+
+
+
+//Node matrix caching
+	bool bMatrixDirty;
+	ofMatrix4x4 globalTransformMatrix;
+	ofNodeSet children;
+
+
+	void flagGlobalMatrixDirty();
 };

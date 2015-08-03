@@ -135,6 +135,7 @@
     <ClInclude Include="..\..\..\openFrameworks\3d\ofEasyCam.h" />
     <ClInclude Include="..\..\..\openFrameworks\3d\ofMesh.h" />
     <ClInclude Include="..\..\..\openFrameworks\3d\ofNode.h" />
+    <ClInclude Include="..\..\..\openFrameworks\3d\ofTransform.h" />
     <ClInclude Include="..\..\..\openFrameworks\app\ofAppBaseWindow.h" />
     <ClInclude Include="..\..\..\openFrameworks\app\ofAppGLFWWindow.h" />
     <ClInclude Include="..\..\..\openFrameworks\app\ofAppNoWindow.h" />
@@ -217,6 +218,7 @@
     <ClCompile Include="..\..\..\openFrameworks\3d\ofEasyCam.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\3d\ofMesh.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\3d\ofNode.cpp" />
+    <ClCompile Include="..\..\..\openFrameworks\3d\ofTransform.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppGLFWWindow.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppGlutWindow.cpp" />
     <ClCompile Include="..\..\..\openFrameworks\app\ofAppNoWindow.cpp" />

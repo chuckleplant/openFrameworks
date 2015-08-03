@@ -5,8 +5,9 @@
 #include "of3dGraphics.h"
 
 ofTransform::ofTransform()
-	:parent(NULL)
-	, legacyCustomDrawOverrided(true) {
+	:parent(nullptr)
+	, legacyCustomDrawOverrided(true)
+{
 	setPosition(ofVec3f(0, 0, 0));
 	setOrientation(ofVec3f(0, 0, 0));
 	setScale(1);
@@ -15,9 +16,9 @@ ofTransform::ofTransform()
 //----------------------------------------
 void ofTransform::setParent(ofTransform& parent, bool bMaintainGlobalTransform) {
 	if (bMaintainGlobalTransform) {
-		ofMatrix4x4 globalTransform(getGlobalTransformMatrix());
+		ofMatrix4x4 postParentGlobalTransform = getGlobalTransformMatrix() * parent.getGlobalTransformMatrix().getInverse();
 		this->parent = &parent;
-		setTransformMatrix(globalTransform);
+		setTransformMatrix(postParentGlobalTransform);
 	}
 	else {
 		this->parent = &parent;
@@ -28,11 +29,11 @@ void ofTransform::setParent(ofTransform& parent, bool bMaintainGlobalTransform) 
 void ofTransform::clearParent(bool bMaintainGlobalTransform) {
 	if (bMaintainGlobalTransform) {
 		ofMatrix4x4 globalTransform(getGlobalTransformMatrix());
-		this->parent = NULL;
+		this->parent = nullptr;
 		setTransformMatrix(globalTransform);
 	}
 	else {
-		this->parent = NULL;
+		this->parent = nullptr;
 	}
 }
 
@@ -73,7 +74,7 @@ void ofTransform::setGlobalPosition(float px, float py, float pz) {
 
 //----------------------------------------
 void ofTransform::setGlobalPosition(const ofVec3f& p) {
-	if (parent == NULL) {
+	if (parent == nullptr) {
 		setPosition(p);
 	}
 	else {
@@ -115,7 +116,7 @@ void ofTransform::setOrientation(const ofVec3f& eulerAngles) {
 
 //----------------------------------------
 void ofTransform::setGlobalOrientation(const ofQuaternion& q) {
-	if (parent == NULL) {
+	if (parent == nullptr) {
 		setOrientation(q);
 	}
 	else {
@@ -315,6 +316,17 @@ const ofMatrix4x4& ofTransform::getLocalTransformMatrix() const {
 
 //----------------------------------------
 ofMatrix4x4 ofTransform::getGlobalTransformMatrix() const {
+	/*
+	if(bMatrixDirty)
+	{
+	if(parent) globalTransformMatrix = getLocalTransformMatrix() * parent->getGlobalTransformMatrix();
+	else globalTransformMatrix = getLocalTransformMatrix;
+	bMatrixDirty = false;
+	}
+	return globalTransformMatrix;
+	*/
+
+
 	if (parent) return getLocalTransformMatrix() * parent->getGlobalTransformMatrix();
 	else return getLocalTransformMatrix();
 }
@@ -362,14 +374,10 @@ void ofTransform::resetTransform() {
 
 //----------------------------------------
 void ofTransform::draw()  const {
-	// Temporary hack to draw transforms
-	ofNode tmp;
-	this->transformGL();
-	tmp.draw();
-	this->restoreTransformGL();
-
-
-	//ofGetCurrentRenderer()->draw(*this);
+	ofNode n;
+	n.setGlobalPosition(this->getGlobalPosition());
+	n.setGlobalOrientation(this->getGlobalOrientation());
+	n.draw();
 }
 
 //----------------------------------------
@@ -388,7 +396,7 @@ void ofTransform::customDraw() {
 
 //----------------------------------------
 void ofTransform::transformGL(ofBaseRenderer * renderer) const {
-	if (renderer == NULL) {
+	if (renderer == nullptr) {
 		renderer = ofGetCurrentRenderer().get();
 	}
 	renderer->pushMatrix();
@@ -397,7 +405,7 @@ void ofTransform::transformGL(ofBaseRenderer * renderer) const {
 
 //----------------------------------------
 void ofTransform::restoreTransformGL(ofBaseRenderer * renderer) const {
-	if (renderer == NULL) {
+	if (renderer == nullptr) {
 		renderer = ofGetCurrentRenderer().get();
 	}
 	renderer->popMatrix();

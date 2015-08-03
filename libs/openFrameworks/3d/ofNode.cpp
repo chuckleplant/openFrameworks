@@ -6,7 +6,8 @@
 
 ofNode::ofNode()
 :parent(nullptr)
-,legacyCustomDrawOverrided(true){
+,legacyCustomDrawOverrided(true)
+,bMatrixDirty(true){
 	setPosition(ofVec3f(0, 0, 0));
 	setOrientation(ofVec3f(0, 0, 0));
 	setScale(1);
@@ -50,6 +51,7 @@ void ofNode::setTransformMatrix(const ofMatrix4x4 &m44) {
 	onPositionChanged();
 	onOrientationChanged();
 	onScaleChanged();
+	flagGlobalMatrixDirty();
 }
 
 //----------------------------------------
@@ -62,6 +64,7 @@ void ofNode::setPosition(const ofVec3f& p) {
 	position = p;
 	localTransformMatrix.setTranslation(position);
 	onPositionChanged();
+	flagGlobalMatrixDirty();
 }
 
 //----------------------------------------
@@ -103,6 +106,7 @@ void ofNode::setOrientation(const ofQuaternion& q) {
 	orientation = q;
 	createMatrix();
 	onOrientationChanged();
+	flagGlobalMatrixDirty();
 }
 
 //----------------------------------------
@@ -146,6 +150,7 @@ void ofNode::setScale(const ofVec3f& s) {
 	this->scale = s;
 	createMatrix();
 	onScaleChanged();
+	flagGlobalMatrixDirty();
 }
 
 //----------------------------------------
@@ -163,6 +168,7 @@ void ofNode::move(const ofVec3f& offset) {
 	position += offset;
 	localTransformMatrix.setTranslation(position);
 	onPositionChanged();
+	flagGlobalMatrixDirty();
 }
 
 //----------------------------------------
@@ -200,6 +206,7 @@ void ofNode::rotate(const ofQuaternion& q) {
 	orientation *= q;
 	createMatrix();
 	onOrientationChanged();
+	flagGlobalMatrixDirty();
 }
 
 //----------------------------------------
@@ -223,6 +230,7 @@ void ofNode::rotateAround(const ofQuaternion& q, const ofVec3f& point) {
 	
 	onOrientationChanged();
 	onPositionChanged();
+	flagGlobalMatrixDirty();
 }
 
 //----------------------------------------
@@ -311,6 +319,17 @@ const ofMatrix4x4& ofNode::getLocalTransformMatrix() const {
 
 //----------------------------------------
 ofMatrix4x4 ofNode::getGlobalTransformMatrix() const {
+	/*
+	if(bMatrixDirty)
+	{
+		if(parent) globalTransformMatrix = getLocalTransformMatrix() * parent->getGlobalTransformMatrix();
+		else globalTransformMatrix = getLocalTransformMatrix;
+		bMatrixDirty = false;
+	}
+	return globalTransformMatrix;
+	*/
+
+
 	if(parent) return getLocalTransformMatrix() * parent->getGlobalTransformMatrix();
 	else return getLocalTransformMatrix();
 }
@@ -390,6 +409,14 @@ void ofNode::restoreTransformGL(ofBaseRenderer * renderer) const {
 		renderer = ofGetCurrentRenderer().get();
 	}
 	renderer->popMatrix();
+}
+
+void ofNode::flagGlobalMatrixDirty()
+{
+	bMatrixDirty = true;
+	for (ofNode* child : children) {
+		child->flagGlobalMatrixDirty();
+	}
 }
 
 //----------------------------------------
