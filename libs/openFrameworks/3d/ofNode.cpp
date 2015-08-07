@@ -21,11 +21,17 @@ void ofNode::setParent(ofNode& parent, bool bMaintainGlobalTransform) {
 		setTransformMatrix(postParentGlobalTransform);
 	} else {
 		this->parent = &parent;
+		flagGlobalMatrixDirty();
 	}
+	parent.children.emplace(this);
 }
 
 //----------------------------------------
 void ofNode::clearParent(bool bMaintainGlobalTransform) {
+	if (parent)
+	{
+		parent->children.erase(this);
+	}
     if(bMaintainGlobalTransform) {
         ofMatrix4x4 globalTransform(getGlobalTransformMatrix());
         this->parent = nullptr;
@@ -48,10 +54,10 @@ void ofNode::setTransformMatrix(const ofMatrix4x4 &m44) {
 	localTransformMatrix.decompose(position, orientation, scale, so);
 	updateAxis();
 	
+	flagGlobalMatrixDirty();
 	onPositionChanged();
 	onOrientationChanged();
 	onScaleChanged();
-	flagGlobalMatrixDirty();
 }
 
 //----------------------------------------
@@ -63,8 +69,8 @@ void ofNode::setPosition(float px, float py, float pz) {
 void ofNode::setPosition(const ofVec3f& p) {
 	position = p;
 	localTransformMatrix.setTranslation(position);
-	onPositionChanged();
 	flagGlobalMatrixDirty();
+	onPositionChanged();
 }
 
 //----------------------------------------
@@ -105,8 +111,8 @@ float ofNode::getZ() const {
 void ofNode::setOrientation(const ofQuaternion& q) {
 	orientation = q;
 	createMatrix();
-	onOrientationChanged();
 	flagGlobalMatrixDirty();
+	onOrientationChanged();
 }
 
 //----------------------------------------
@@ -149,8 +155,8 @@ void ofNode::setScale(float sx, float sy, float sz) {
 void ofNode::setScale(const ofVec3f& s) {
 	this->scale = s;
 	createMatrix();
-	onScaleChanged();
 	flagGlobalMatrixDirty();
+	onScaleChanged();
 }
 
 //----------------------------------------
@@ -167,8 +173,8 @@ void ofNode::move(float x, float y, float z) {
 void ofNode::move(const ofVec3f& offset) {
 	position += offset;
 	localTransformMatrix.setTranslation(position);
-	onPositionChanged();
 	flagGlobalMatrixDirty();
+	onPositionChanged();
 }
 
 //----------------------------------------
@@ -205,8 +211,8 @@ void ofNode::roll(float degrees) {
 void ofNode::rotate(const ofQuaternion& q) {
 	orientation *= q;
 	createMatrix();
-	onOrientationChanged();
 	flagGlobalMatrixDirty();
+	onOrientationChanged();
 }
 
 //----------------------------------------
@@ -228,9 +234,9 @@ void ofNode::rotateAround(const ofQuaternion& q, const ofVec3f& point) {
 	
 	setGlobalPosition((getGlobalPosition() - point)* q + point); 
 	
+	flagGlobalMatrixDirty();
 	onOrientationChanged();
 	onPositionChanged();
-	flagGlobalMatrixDirty();
 }
 
 //----------------------------------------
@@ -319,19 +325,14 @@ const ofMatrix4x4& ofNode::getLocalTransformMatrix() const {
 
 //----------------------------------------
 ofMatrix4x4 ofNode::getGlobalTransformMatrix() const {
-	/*
-	if(bMatrixDirty)
-	{
-		if(parent) globalTransformMatrix = getLocalTransformMatrix() * parent->getGlobalTransformMatrix();
-		else globalTransformMatrix = getLocalTransformMatrix;
+	if(bMatrixDirty) {
+		if(parent) 
+			globalTransformMatrix = this->getLocalTransformMatrix() * parent->getGlobalTransformMatrix();
+		else 
+			globalTransformMatrix = getLocalTransformMatrix();
 		bMatrixDirty = false;
 	}
 	return globalTransformMatrix;
-	*/
-
-
-	if(parent) return getLocalTransformMatrix() * parent->getGlobalTransformMatrix();
-	else return getLocalTransformMatrix();
 }
 
 //----------------------------------------
@@ -413,20 +414,19 @@ void ofNode::restoreTransformGL(ofBaseRenderer * renderer) const {
 
 void ofNode::flagGlobalMatrixDirty()
 {
-	bMatrixDirty = true;
-	for (ofNode* child : children) {
-		child->flagGlobalMatrixDirty();
+	if (!bMatrixDirty) {
+		bMatrixDirty = true;
+		for (ofNode* child : children) {
+			child->flagGlobalMatrixDirty();
+		}
 	}
 }
 
 //----------------------------------------
 void ofNode::createMatrix() {
-	//if(isMatrixDirty) {
-	//	isMatrixDirty = false;
 	localTransformMatrix.makeScaleMatrix(scale);
 	localTransformMatrix.rotate(orientation);
 	localTransformMatrix.setTranslation(position);
-	
 	updateAxis();
 }
 

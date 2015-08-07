@@ -259,8 +259,8 @@ private:
 
 
 //Node matrix caching
-	bool bMatrixDirty;
-	ofMatrix4x4 globalTransformMatrix;
+	mutable bool bMatrixDirty;
+	mutable ofMatrix4x4 globalTransformMatrix;
 	ofNodeSet children;
 
 
