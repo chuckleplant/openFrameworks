@@ -13,6 +13,26 @@ ofNode::ofNode()
 	setScale(1);
 }
 
+
+void ofNode::addChild(ofNode* child) {
+	if (childrenIdx.find(child) == childrenIdx.end()) {
+		childrenPtrs.emplace_back(child);
+		childrenIdx[child] = childrenPtrs.size() - 1;
+	} else {
+		ofLogWarning("ofNode") << "Children already added."; 
+	}
+}
+
+
+void ofNode::removeChild(ofNode* child) {
+	if (childrenIdx.find(child) != childrenIdx.end()) {
+		size_t index = childrenIdx[child];
+		childrenPtrs.erase(childrenPtrs.begin() + index);
+	} else {
+		ofLogWarning("ofNode") << "Children not present.";
+	}
+}
+
 //----------------------------------------
 void ofNode::setParent(ofNode& parent, bool bMaintainGlobalTransform) {
     if(bMaintainGlobalTransform) {
@@ -23,14 +43,17 @@ void ofNode::setParent(ofNode& parent, bool bMaintainGlobalTransform) {
 		this->parent = &parent;
 		flagGlobalMatrixDirty();
 	}
-	parent.children.emplace(this);
+	
+	parent.addChild(this);
+	//parent.children.emplace(this);
 }
 
 //----------------------------------------
 void ofNode::clearParent(bool bMaintainGlobalTransform) {
 	if (parent)
 	{
-		parent->children.erase(this);
+		parent->removeChild(this);
+		//parent->children.erase(this);
 	}
     if(bMaintainGlobalTransform) {
         ofMatrix4x4 globalTransform(getGlobalTransformMatrix());
@@ -412,11 +435,10 @@ void ofNode::restoreTransformGL(ofBaseRenderer * renderer) const {
 	renderer->popMatrix();
 }
 
-void ofNode::flagGlobalMatrixDirty()
-{
+void ofNode::flagGlobalMatrixDirty() {
 	if (!bMatrixDirty) {
 		bMatrixDirty = true;
-		for (ofNode* child : children) {
+		for (ofNode* child : childrenPtrs) {
 			child->flagGlobalMatrixDirty();
 		}
 	}

@@ -39,7 +39,8 @@
 // TODO: cache inverseMatrix, local and global
 class ofNode {
 public:
-	typedef std::unordered_set<ofNode*> ofNodeSet;
+	//typedef std::unordered_set<ofNode*> ofNodeSet;
+	//typedef std::map<ofNode*, size_t> ofNodeMap;
 	/// \cond INTERNAL
 	
 	ofNode();
@@ -254,14 +255,16 @@ private:
 	
 	ofMatrix4x4 localTransformMatrix;
 	bool legacyCustomDrawOverrided;
-//	ofMatrix4x4 globalTransformMatrix;
-
-
 
 //Node matrix caching
 	mutable bool bMatrixDirty;
 	mutable ofMatrix4x4 globalTransformMatrix;
-	ofNodeSet children;
+	std::map<ofNode*, size_t> childrenIdx;
+	vector<ofNode*> childrenPtrs;
+
+	void addChild(ofNode* child);
+	void removeChild(ofNode* child);
+
 
 
 	void flagGlobalMatrixDirty();
