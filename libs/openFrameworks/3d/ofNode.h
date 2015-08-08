@@ -256,16 +256,13 @@ private:
 	ofMatrix4x4 localTransformMatrix;
 	bool legacyCustomDrawOverrided;
 
-//Node matrix caching
-	mutable bool bMatrixDirty;
-	mutable ofMatrix4x4 globalTransformMatrix;
+	//Node matrix caching
 	std::map<ofNode*, size_t> childrenIdx;
 	vector<ofNode*> childrenPtrs;
+	mutable bool bMatrixDirty;
+	mutable ofMatrix4x4 globalTransformMatrix;
 
 	void addChild(ofNode* child);
 	void removeChild(ofNode* child);
-
-
-
 	void flagGlobalMatrixDirty();
 };

@@ -13,7 +13,7 @@ ofNode::ofNode()
 	setScale(1);
 }
 
-
+//----------------------------------------
 void ofNode::addChild(ofNode* child) {
 	if (childrenIdx.find(child) == childrenIdx.end()) {
 		childrenPtrs.emplace_back(child);
@@ -23,7 +23,7 @@ void ofNode::addChild(ofNode* child) {
 	}
 }
 
-
+//----------------------------------------
 void ofNode::removeChild(ofNode* child) {
 	if (childrenIdx.find(child) != childrenIdx.end()) {
 		size_t index = childrenIdx[child];
@@ -433,6 +433,7 @@ void ofNode::restoreTransformGL(ofBaseRenderer * renderer) const {
 	renderer->popMatrix();
 }
 
+//----------------------------------------
 void ofNode::flagGlobalMatrixDirty() {
 	if (!bMatrixDirty) {
 		bMatrixDirty = true;
