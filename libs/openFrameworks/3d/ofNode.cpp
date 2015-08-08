@@ -45,7 +45,6 @@ void ofNode::setParent(ofNode& parent, bool bMaintainGlobalTransform) {
 	}
 	
 	parent.addChild(this);
-	//parent.children.emplace(this);
 }
 
 //----------------------------------------
@@ -53,7 +52,6 @@ void ofNode::clearParent(bool bMaintainGlobalTransform) {
 	if (parent)
 	{
 		parent->removeChild(this);
-		//parent->children.erase(this);
 	}
     if(bMaintainGlobalTransform) {
         ofMatrix4x4 globalTransform(getGlobalTransformMatrix());
