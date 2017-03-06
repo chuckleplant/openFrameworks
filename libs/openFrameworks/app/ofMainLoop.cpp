@@ -31,7 +31,6 @@
 ofMainLoop::ofMainLoop()
 :bShouldClose(false)
 ,status(0)
-,allowMultiWindow(true)
 ,escapeQuits(true){
 
 }

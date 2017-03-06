@@ -972,7 +972,7 @@ static void rotateMouseXY(ofOrientation orientation, int w, int h, double &x, do
 //------------------------------------------------------------
 ofAppGLFWWindow * ofAppGLFWWindow::setCurrent(GLFWwindow* windowP){
 	ofAppGLFWWindow * instance = static_cast<ofAppGLFWWindow *>(glfwGetWindowUserPointer(windowP));
-	shared_ptr<ofMainLoop> mainLoop = ofGetMainLoop();
+	shared_ptr<ofBaseMainLoop> mainLoop = ofGetMainLoop();
 	if(mainLoop){
 		mainLoop->setCurrentWindow(instance);
 	}

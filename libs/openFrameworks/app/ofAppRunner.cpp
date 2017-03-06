@@ -53,8 +53,8 @@
 
 //--------------------------------------
 namespace{
-    shared_ptr<ofMainLoop> & mainLoop(){
-        static shared_ptr<ofMainLoop> * mainLoop(new shared_ptr<ofMainLoop>(new ofMainLoop));
+    shared_ptr<ofBaseMainLoop> & mainLoop(){
+        static shared_ptr<ofBaseMainLoop> * mainLoop(new shared_ptr<ofBaseMainLoop>(new ofMainLoop));
         return *mainLoop;
     }
 
@@ -156,7 +156,7 @@ void ofInit(){
 }
 
 //--------------------------------------
-shared_ptr<ofMainLoop> ofGetMainLoop(){
+shared_ptr<ofBaseMainLoop> ofGetMainLoop(){
 	return mainLoop();
 }
 
